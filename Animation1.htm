@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Starfield Animation</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; background: #000; }
+    </style>
+</head>
+<body>
+    <canvas id="starfield"></canvas>
+    <script>
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const stars = [];
+        const numStars = 500;
+        let speed = 2;
+
+        class Star {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.z = Math.random() * canvas.width;
+            }
+
+            update() {
+                this.z -= speed;
+                if (this.z <= 0) {
+                    this.z = canvas.width;
+                }
+            }
+
+            draw() {
+                let x, y, rad, opacity;
+                x = (this.x - canvas.width / 2) * (canvas.width / this.z);
+                x += canvas.width / 2;
+                y = (this.y - canvas.height / 2) * (canvas.width / this.z);
+                y += canvas.height / 2;
+                rad = canvas.width / this.z;
+                opacity = (1 - this.z / canvas.width);
+                ctx.beginPath();
+                ctx.arc(x, y, rad, 0, Math.PI * 2);
+                ctx.fillStyle = "rgba(255, 255, 255, " + opacity + ")";
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < numStars; i++) {
+            stars.push(new Star());
+        }
+
+        function animate() {
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(star => {
+                star.update();
+                star.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        document.addEventListener('mousemove', (event) => {
+            speed = event.clientX / window.innerWidth * 10;
+        });
+    </script>
+</body>
+</html>
+
